@@ -66,6 +66,7 @@
             background-clip: text;
             margin-bottom: 10px;
             text-shadow: 0 0 30px rgba(107, 70, 193, 0.3);
+            cursor: pointer;
         }
 
         .subtitle {
@@ -121,6 +122,24 @@
         .search-btn:hover {
             transform: translateY(-50%) scale(1.05);
             box-shadow: 0 5px 15px rgba(107, 70, 193, 0.4);
+        }
+
+        .back-btn {
+            background: rgba(107, 70, 193, 0.1);
+            border: 1px solid rgba(107, 70, 193, 0.3);
+            color: #06B6D4;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: rgba(107, 70, 193, 0.2);
+            transform: translateY(-2px);
         }
 
         .loading {
@@ -393,7 +412,7 @@
     
     <div class="container">
         <div class="header">
-            <h1 class="logo">StreamFinder</h1>
+            <h1 class="logo" onclick="goHome()">StreamFinder</h1>
             <p class="subtitle">Find and stream your favorite movies and TV shows</p>
         </div>
 
@@ -407,6 +426,7 @@
         <div class="search-container">
             <input type="text" class="search-box" id="searchInput" placeholder="Search for movies or TV shows...">
             <button class="search-btn" onclick="searchMovies()">Search</button>
+            <button class="back-btn" onclick="goBack()">Back</button>
         </div>
 
         <div id="loadingContainer" class="loading" style="display: none;">
@@ -449,6 +469,18 @@
                 particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
                 particlesContainer.appendChild(particle);
             }
+        }
+
+        function goHome() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('loadingContainer').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('historyContainer').style.display = 'block';
+            loadHistory();
+        }
+
+        function goBack() {
+            window.history.back();
         }
 
         function loadHistory() {
@@ -517,7 +549,7 @@
                     headers: { 'Accept': 'application/json' }
                 });
                 const data = await response.json();
-                console.log('Search Response:', data); // Debug
+                console.log('Search Response:', data);
                 
                 if (data.Response === 'True') {
                     searchResults = data.Search.map((item, index) => ({
@@ -640,7 +672,7 @@
                     headers: { 'Accept': 'application/json' }
                 });
                 const data = await response.json();
-                console.log('Description Response:', data); // Debug
+                console.log('Description Response:', data);
                 
                 if (data.Response === 'True') {
                     showModal(`
@@ -673,7 +705,7 @@
                     headers: { 'Accept': 'application/json' }
                 });
                 const seriesData = await seriesResponse.json();
-                console.log('Series Response:', seriesData); // Debug
+                console.log('Series Response:', seriesData);
                 
                 if (seriesData.Response === 'True') {
                     const totalSeasons = parseInt(seriesData.totalSeasons) || 1;
@@ -719,7 +751,7 @@
                     headers: { 'Accept': 'application/json' }
                 });
                 const data = await response.json();
-                console.log('Episodes Response:', data); // Debug
+                console.log('Episodes Response:', data);
                 
                 if (data.Response === 'True') {
                     episodeList.innerHTML = data.Episodes.map(ep => `
