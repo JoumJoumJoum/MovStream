@@ -11,7 +11,7 @@ from datetime import datetime
 import platform
 import socket
 
-API_KEY = '15eb0bb0'
+API_KEY = 'OMDB API KEY HERE'
 
 # ANSI color codes
 COLOR_BLUE = '\033[34m'
