@@ -52,12 +52,12 @@
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            position: relative;
             margin-bottom: 40px;
+            text-align: center;
             animation: fadeInDown 1s ease-out;
         }
+
 
         .logo {
             font-size: 2.5rem;
@@ -71,16 +71,20 @@
             cursor: pointer;
         }
 
-        .github-logo {
+        .header .github-logo {
+            position: absolute;
+            top: 0;
+            right: 0;
             width: 32px;
             height: 32px;
             transition: transform 0.3s ease;
             cursor: pointer;
         }
 
-        .github-logo:hover {
+        .header .github-logo:hover {
             transform: scale(1.1);
         }
+
 
         .subtitle {
             color: #9CA3AF;
