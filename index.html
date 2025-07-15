@@ -52,7 +52,9 @@
         }
 
         .header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 40px;
             animation: fadeInDown 1s ease-out;
         }
@@ -69,10 +71,22 @@
             cursor: pointer;
         }
 
+        .github-logo {
+            width: 32px;
+            height: 32px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .github-logo:hover {
+            transform: scale(1.1);
+        }
+
         .subtitle {
             color: #9CA3AF;
             font-size: 1.1rem;
             margin-bottom: 30px;
+            text-align: center;
         }
 
         .search-container {
@@ -397,6 +411,14 @@
                 width: 95%;
                 margin: 20px;
             }
+            .header {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            .github-logo {
+                margin-top: 10px;
+            }
         }
 
         ::-webkit-scrollbar {
@@ -423,13 +445,17 @@
     <div class="container">
         <div class="header">
             <h1 class="logo" onclick="goHome()">MovStream</h1>
-            <p class="subtitle">Find and stream your favorite movies and TV shows</p>
+            <a href="https://github.com/JoumJoumJoum/MovStream" target="_blank">
+                <svg class="github-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 0C5.37 0 0 5.37 0 12C0 17.09 3.43 21.36 8.23 22.95C8.83 23.06 9.05 22.67 9.05 22.33C9.05 22.04 9.04 21.25 9.03 20.27C5.67 21.02 4.97 18.73 4.97 18.73C4.45 17.45 3.73 17.06 3.73 17.06C2.69 16.29 3.77 16.31 3.77 16.31C4.88 16.39 5.47 17.46 5.47 17.46C6.44 19.09 8.07 18.78 9.07 18.46C9.22 17.65 9.53 17.09 9.88 16.77C7.14 16.45 4.29 15.42 4.29 10.88C4.29 9.55 4.78 8.44 5.56 7.59C5.43 7.27 4.99 6.01 5.68 4.34C5.68 4.34 6.67 4 9.03 5.36C9.93 5.11 10.97 4.98 12 4.98C13.03 4.98 14.07 5.11 14.97 5.36C17.33 4 18.32 4.34 18.32 4.34C19.01 6.01 18.57 7.27 18.44 7.59C19.22 8.44 19.71 9.55 19.71 10.88C19.71 15.43 16.85 16.45 14.1 16.77C14.55 17.17 14.95 17.96 14.95 19.15C14.95 20.82 14.94 21.94 14.94 22.33C14.94 22.67 15.16 23.06 15.77 22.95C20.57 21.36 24 17.09 24 12C24 5.37 18.63 0 12 0Z" fill="#A78BFA"/>
+                </svg>
+            </a>
         </div>
 
+        <div class="subtitle">Find and stream your favorite movies and TV shows</div>
+
         <div class="history-container" id="historyContainer">
-            <h2 class="history-title">
-                📺 Recent Watches
-            </h2>
+            <h2 class="history-title">📺 Recent Watches</h2>
             <div id="recommendationContainer"></div>
             <div id="historyList"></div>
         </div>
@@ -569,7 +595,7 @@
                     <div class="history-item" onclick="openHistoryItem(${index})">
                         <strong style="color: #E0D7FF">${title}</strong>
                         <div style="color: #9CA3AF; font-size: 0.9rem; margin-top: 5px;">
-                            ${item.type} • ${item.timestamp}
+                            ${item.type.charAt(0).toUpperCase() + item.type.slice(1)} • ${item.timestamp}
                         </div>
                     </div>
                 `;
@@ -595,7 +621,6 @@
                     headers: { 'Accept': 'application/json' }
                 });
                 const data = await response.json();
-                console.log('Search Response:', data);
                 
                 if (data.Response === 'True') {
                     searchResults = data.Search.map((item, index) => ({
@@ -607,12 +632,15 @@
                         poster: item.Poster
                     }));
                     displayResults();
+                    scrollToResults();
                 } else {
                     showError(data.Error || 'No results found');
+                    scrollToResults();
                 }
             } catch (error) {
                 console.error('Search Error:', error);
                 showError('Search failed: ' + error.message);
+                scrollToResults();
             }
         }
 
@@ -646,11 +674,16 @@
             document.getElementById('seriesSection').style.display = series.length ? 'block' : 'none';
         }
 
+        function scrollToResults() {
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
         function createItemCard(item) {
             return `
                 <div class="item-card">
                     <div class="item-title">${item.title}</div>
-                    <div class="item-meta">${item.year} • ${item.type} • IMDb: ${item.imdbID}</div>
+                    <div class="item-meta">${item.year} • ${item.type.charAt(0).toUpperCase() + item.type.slice(1)} • IMDb: ${item.imdbID}</div>
                     <div class="item-actions">
                         <button class="action-btn primary" onclick="getStreamLink(${item.index})">
                             ${item.type === 'movie' ? 'Watch Now' : 'Watch Series'}
@@ -691,7 +724,6 @@
                     headers: { 'Accept': 'application/json' }
                 });
                 const data = await response.json();
-                console.log('Description Response:', data);
                 
                 if (data.Response === 'True') {
                     showModal(`
@@ -724,7 +756,6 @@
                     headers: { 'Accept': 'application/json' }
                 });
                 const seriesData = await seriesResponse.json();
-                console.log('Series Response:', seriesData);
                 
                 if (seriesData.Response === 'True') {
                     const totalSeasons = parseInt(seriesData.totalSeasons) || 1;
@@ -768,7 +799,6 @@
                     headers: { 'Accept': 'application/json' }
                 });
                 const data = await response.json();
-                console.log('Episodes Response:', data);
                 
                 if (data.Response === 'True') {
                     episodeList.innerHTML = data.Episodes.map(ep => `
