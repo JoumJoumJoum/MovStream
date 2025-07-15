@@ -1,12 +1,5 @@
 [
   {
-    "title": "Frozen",
-    "type": "movie",
-    "imdbID": "tt2294629",
-    "stream_url": "https://vidsrc.xyz/embed/movie/tt2294629",
-    "timestamp": "2025-07-13 08:13:58"
-  },
-  {
     "title": "Isle of Dogs",
     "type": "movie",
     "imdbID": "tt5104604",
@@ -33,5 +26,12 @@
     "imdbID": "tt0107290",
     "stream_url": "https://vidsrc.xyz/embed/movie/tt0107290",
     "timestamp": "2025-07-13 12:48:54"
+  },
+  {
+    "title": "Bas Ek Pal",
+    "type": "movie",
+    "imdbID": "tt0808164",
+    "stream_url": "https://vidsrc.xyz/embed/movie/tt0808164",
+    "timestamp": "2025-07-14 15:28:38"
   }
 ]
