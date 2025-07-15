@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamFinder</title>
+    <title>MovStream</title>
     <style>
         * {
             margin: 0;
@@ -422,7 +422,7 @@
     
     <div class="container">
         <div class="header">
-            <h1 class="logo" onclick="goHome()">StreamFinder</h1>
+            <h1 class="logo" onclick="goHome()">MovStream</h1>
             <p class="subtitle">Find and stream your favorite movies and TV shows</p>
         </div>
 
@@ -564,9 +564,6 @@
                         title += ` - ${item.episode_title}`;
                     }
                 }
-                if (item.ds_lang) {
-                    title += ` (${item.ds_lang})`;
-                }
                 
                 return `
                     <div class="history-item" onclick="openHistoryItem(${index})">
@@ -660,7 +657,6 @@
                         </button>
                         <button class="action-btn" onclick="getDescription(${item.index})">Description</button>
                         ${item.type === 'series' ? `<button class="action-btn" onclick="getEpisodes(${item.index})">Episodes</button>` : ''}
-                        <button class="action-btn" onclick="getStreamWithLang(${item.index})">With Subtitles</button>
                     </div>
                 </div>
             `;
@@ -684,32 +680,6 @@
                 imdbID: item.imdbID,
                 stream_url: streamUrl
             });
-        }
-
-        function getStreamWithLang(index) {
-            const item = searchResults[index - 1];
-            const lang = prompt('Enter subtitle language code (e.g., en, de, fr):', 'en');
-            
-            if (lang && lang.length === 2) {
-                let streamUrl;
-                if (item.type === 'movie') {
-                    streamUrl = `https://vidsrc.xyz/embed/movie/${item.imdbID}?ds_lang=${lang}`;
-                } else {
-                    streamUrl = `https://vidsrc.xyz/embed/tv/${item.imdbID}?ds_lang=${lang}`;
-                }
-                
-                window.open(streamUrl, '_blank');
-                
-                saveToHistory({
-                    title: item.title,
-                    type: item.type,
-                    imdbID: item.imdbID,
-                    stream_url: streamUrl,
-                    ds_lang: lang
-                });
-            } else if (lang) {
-                showError('Invalid language code. Use two letters (e.g., en, de).');
-            }
         }
 
         async function getDescription(index) {
@@ -770,8 +740,6 @@
                     content += `</select>
                         <div id="episodeList" style="margin-bottom: 20px;"></div>
                         <div>
-                            <input type="text" id="langInput" placeholder="Subtitle language (e.g., en, de)" 
-                                   style="width: 100%; padding: 8px; margin-bottom: 10px; background: #000000; color: #E5E7EB; border: 1px solid #6B46C1; border-radius: 6px;">
                             <button class="action-btn primary" onclick="watchSelectedEpisode('${item.imdbID}', '${item.title}')" 
                                     style="margin-right: 10px;">Watch Selected</button>
                             <button class="action-btn" onclick="closeModal()">Cancel</button>
@@ -834,12 +802,7 @@
         }
 
         function watchEpisode(imdbID, season, episode, episodeTitle, seriesTitle) {
-            const lang = document.getElementById('langInput')?.value || '';
             let streamUrl = `https://vidsrc.xyz/embed/tv/${imdbID}/${season}-${episode}`;
-            
-            if (lang && lang.length === 2) {
-                streamUrl += `?ds_lang=${lang}`;
-            }
             
             window.open(streamUrl, '_blank');
             
@@ -852,10 +815,6 @@
                 episode: episode,
                 episode_title: episodeTitle
             };
-            
-            if (lang) {
-                historyItem.ds_lang = lang;
-            }
             
             saveToHistory(historyItem);
             closeModal();
@@ -864,15 +823,9 @@
         function watchSelectedEpisode(imdbID, seriesTitle) {
             const season = document.getElementById('seasonSelect').value;
             const episode = document.getElementById('selectedEpisode')?.value;
-            const lang = document.getElementById('langInput').value;
             
             if (!episode) {
                 showError('Please select an episode.');
-                return;
-            }
-            
-            if (lang && !/^[a-z]{2}$/i.test(lang)) {
-                showError('Invalid language code. Use two letters (e.g., en, de).');
                 return;
             }
             
@@ -880,9 +833,6 @@
             const episodeTitle = episodeList.querySelector(`#episode-${episode} strong`)?.textContent.split(': ')[1] || 'Unknown';
             
             let streamUrl = `https://vidsrc.xyz/embed/tv/${imdbID}/${season}-${episode}`;
-            if (lang) {
-                streamUrl += `?ds_lang=${lang}`;
-            }
             
             window.open(streamUrl, '_blank');
             
@@ -895,10 +845,6 @@
                 episode: episode,
                 episode_title: episodeTitle
             };
-            
-            if (lang) {
-                historyItem.ds_lang = lang;
-            }
             
             saveToHistory(historyItem);
             closeModal();
